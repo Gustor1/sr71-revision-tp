@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SR71 · Révision TP machine</title>
+<meta name="description" content="Révision de l'évaluation de TP réseaux SR71 (Cisco CCNA 1) : commandes par machine, énoncé → commande, simulateur IOS, câblage, annale corrigée, fiche A4.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f766e'/%3E%3Ctext x='50' y='66' font-size='50' text-anchor='middle' fill='white' font-family='monospace'%3E%3E_%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+<script>try{var t=localStorage.getItem('sr71tp-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="top">
+  <div class="brand"><span class="logo">&gt;_</span><span><b>SR71</b> · TP machine</span></div>
+  <nav class="tabs" aria-label="Sections">
+    <a href="#accueil">Accueil</a>
+    <a href="#annale">Annale corrigée</a>
+    <a href="#a4">Fiche A4</a>
+    <a href="#commandes">Commandes</a>
+    <a href="#enonce">Énoncé → commande</a>
+    <a href="#simulateur">Simulateur IOS</a>
+    <a href="#cablage">Câblage</a>
+    <a href="#exos">Exercices</a>
+    <a href="#examen">Examen blanc</a>
+  </nav>
+  <button class="theme" id="themeBtn" type="button" aria-label="Changer de thème">◐</button>
+</header>
+
+<main id="main">
+
+<!-- ===================== ACCUEIL ===================== -->
+<section class="page" id="p-accueil" data-page="accueil">
+  <div class="hero">
+    <div>
+      <p class="kicker">Évaluation de TP réseaux · sur machine</p>
+      <h1>Tu vas taper ces commandes pour de vrai.<br><span>Alors entraîne-toi à les taper.</span></h1>
+      <p class="lead">Tout est tiré de tes 13 TP et de l'annale de ton pote. Ton poste : <b>PC hôte Ubuntu</b> (PuTTY → console), <b>PC-A</b> VM Windows 8, <b>PC-B</b> VM Linux, un <b>switch 2960</b> et un <b>routeur ISR 4321</b>.</p>
+      <div class="cta">
+        <a class="btn" href="#annale">Voir l'annale corrigée</a>
+        <a class="btn ghost" href="#simulateur">Ouvrir le simulateur</a>
+      </div>
+    </div>
+    <div class="hero-term" aria-hidden="true"><pre><span class="p">R1-Nom(config)#</span> no ip domain-lookup
+<span class="p">R1-Nom(config)#</span> security passwords min-length 5
+<span class="p">R1-Nom(config)#</span> crypto key generate rsa
+<span class="o">How many bits in the modulus [512]:</span> 1024
+<span class="o">%SSH-5-ENABLED: SSH 1.99 has been enabled</span>
+<span class="p">R1-Nom(config)#</span> <span class="cur">▍</span></pre></div>
+  </div>
+
+  <h2>L'épreuve en un coup d'œil (d'après l'annale)</h2>
+  <div class="timeline" role="list">
+    <div class="tl" style="--w:10" role="listitem"><b>Câbler</b><span>10 pts</span></div>
+    <div class="tl warn" style="--w:6" role="listitem"><b>Effacer</b><span>−10 si oubli</span></div>
+    <div class="tl" style="--w:42" role="listitem"><b>Configurer S1 + R1 + PC</b><span>50 pts · ~35 min</span></div>
+    <div class="tl" style="--w:24" role="listitem"><b>Tester</b><span>24 pts · ~10 min</span></div>
+    <div class="tl" style="--w:16" role="listitem"><b>show …</b><span>16 pts · ~10 min</span></div>
+    <div class="tl warn" style="--w:6" role="listitem"><b>Nettoyer</b><span>−10 si oubli</span></div>
+  </div>
+
+  <h2>Comment réviser avec ce site (parcours en 6 étapes)</h2>
+  <ol class="steps">
+    <li><a href="#annale"><b>Lis l'annale corrigée</b><span>Comprends chaque ligne : c'est le modèle de ton sujet.</span></a></li>
+    <li><a href="#commandes"><b>Apprends les commandes par machine</b><span>Hôte, PC-A, PC-B, switch, routeur : qui tape quoi, où.</span></a></li>
+    <li><a href="#enonce"><b>Entraîne le réflexe « énoncé → commande »</b><span>L'énoncé est en anglais : « Disable DNS lookup » ⇒ no ip domain-lookup.</span></a></li>
+    <li><a href="#simulateur"><b>Tape tout dans le simulateur IOS</b><span>Missions auto-corrigées : annale R1, annale S1, TP1, SSH, VLAN.</span></a></li>
+    <li><a href="#cablage"><b>Câble les topologies</b><span>Bons ports, bons câbles (droit, croisé, console).</span></a></li>
+    <li><a href="#examen"><b>Fais un examen blanc chronométré</b><span>Nouvelles adresses à chaque fois, correction complète. Puis imprime ta <b>fiche A4</b>.</span></a></li>
+  </ol>
+
+  <div class="grid2">
+    <section class="card">
+      <h3>✅ Checklist du jour J</h3>
+      <ul class="check" id="jourJ" data-store="sr71tp-jourj">
+        <li><label><input type="checkbox"> Fiche A4 imprimée (recto-verso)</label></li>
+        <li><label><input type="checkbox"> J'écris mon NOM sur la copie (−5 sinon)</label></li>
+        <li><label><input type="checkbox"> Câble console sur CONSOLE (pas AUX), PuTTY Serial 9600</label></li>
+        <li><label><input type="checkbox"> Effacer routeur + switch (erase / delete vlan.dat / SDM / reload)</label></li>
+        <li><label><input type="checkbox"> VM en « Accès par pont », câble branché</label></li>
+        <li><label><input type="checkbox"> Pare-feu Windows coupé sur PC-A</label></li>
+        <li><label><input type="checkbox"> Noter les GUA de PC-A et PC-B sur la copie</label></li>
+        <li><label><input type="checkbox"> Laisser la session SSH ouverte pour le prof</label></li>
+        <li><label><input type="checkbox"> Nettoyage APRÈS la correction seulement</label></li>
+      </ul>
+    </section>
+    <section class="card">
+      <h3>📈 Ma progression</h3>
+      <div id="progress" class="prog-tiles"></div>
+      <p class="small muted">Stockée seulement dans ce navigateur.</p>
+    </section>
+  </div>
+</section>
+
+<!-- ===================== ANNALE ===================== -->
+<section class="page" id="p-annale" data-page="annale">
+  <h1>Annale corrigée</h1>
+  <p class="lead">Le sujet de ton pote, tâche par tâche, avec la commande exacte, l'endroit où la taper et les pièges. <b>Mode entraînement</b> : masque les réponses et essaie de les retrouver avant de cliquer.</p>
+  <div class="bar">
+    <label class="switch"><input type="checkbox" id="hideAns"> <span>Masquer les réponses (clic pour révéler)</span></label>
+    <button class="btn ghost" type="button" data-sim="annale-r1">Refaire R1 dans le simulateur</button>
+    <button class="btn ghost" type="button" data-sim="annale-s1">Refaire S1 dans le simulateur</button>
+  </div>
+
+  <details class="photos"><summary>📷 Voir les photos du sujet original (4 pages)</summary>
+    <div class="photo-grid">
+      <a href="img/IMG_6158.jpg" target="_blank" rel="noopener"><img src="img/IMG_6158.jpg" alt="Annale page 1 : topologie et table d'adressage" loading="lazy"></a>
+      <a href="img/IMG_6159.jpg" target="_blank" rel="noopener"><img src="img/IMG_6159.jpg" alt="Annale page 2 : initialisation, S1 et R1" loading="lazy"></a>
+      <a href="img/IMG_6160.jpg" target="_blank" rel="noopener"><img src="img/IMG_6160.jpg" alt="Annale page 3 : fin R1, PC, tests" loading="lazy"></a>
+      <a href="img/IMG_6161.jpg" target="_blank" rel="noopener"><img src="img/IMG_6161.jpg" alt="Annale page 4 : commandes show et nettoyage" loading="lazy"></a>
+    </div>
+  </details>
+
+  <div class="annale" id="annaleBody">
+  <section class="card">
+    <h2>Topologie & adressage</h2>
+    <svg viewBox="0 0 640 120" class="topo" role="img" aria-label="PC-A relié à S1 F0/6, S1 F0/5 relié à R1 G0/0/0, R1 G0/0/1 relié à PC-B">
+      <g class="t-pc"><rect x="8" y="34" width="86" height="46" rx="8"/><text x="51" y="62">PC-A</text></g>
+      <g class="t-sw"><rect x="190" y="34" width="96" height="46" rx="8"/><text x="238" y="62">S1</text></g>
+      <g class="t-r"><rect x="380" y="34" width="96" height="46" rx="23"/><text x="428" y="62">R1</text></g>
+      <g class="t-pc"><rect x="546" y="34" width="86" height="46" rx="8"/><text x="589" y="62">PC-B</text></g>
+      <line x1="94" y1="57" x2="190" y2="57"/><line x1="286" y1="57" x2="380" y2="57"/><line x1="476" y1="57" x2="546" y2="57" stroke-dasharray="6 4"/>
+      <text class="t-lab" x="182" y="28" text-anchor="end">F0/6</text><text class="t-lab" x="294" y="28">F0/5</text>
+      <text class="t-lab" x="372" y="28" text-anchor="end">G0/0/0</text><text class="t-lab" x="484" y="28">G0/0/1</text>
+      <text class="t-lab" x="51" y="102" text-anchor="middle">VM Windows 8</text><text class="t-lab" x="589" y="102" text-anchor="middle">VM Linux</text>
+      <text class="t-lab" x="142" y="76" text-anchor="middle">droit</text><text class="t-lab" x="333" y="76" text-anchor="middle">droit</text><text class="t-lab" x="511" y="76" text-anchor="middle">croisé</text>
+    </svg>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Équipement</th><th>Interface</th><th>Adresses</th><th>Passerelle</th><th>Comment l'obtenir</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="2"><b>R1</b></td><td>G0/0/0</td><td>172.16.2.1/24<br>2001:fe:ab:2::1/64<br>fe80::1</td><td>N/A</td><td>Configuré à la main</td></tr>
+        <tr><td>G0/0/1</td><td>172.16.3.1/24<br>2001:fe:ab:3::1/64<br>fe80::1</td><td>N/A</td><td>Configuré à la main</td></tr>
+        <tr><td><b>S1</b></td><td>VLAN 1</td><td>172.16.2.2/24<br>Auto<br>fe80::2</td><td>172.16.2.1</td><td>SVI ; pas de GUA demandée</td></tr>
+        <tr><td><b>PC-A</b></td><td>Carte</td><td>172.16.2.10/24<br>Auto (SLAAC)<br>Auto</td><td>172.16.2.1<br>Auto</td><td>« Auto » = la GUA vient des RA du routeur</td></tr>
+        <tr><td><b>PC-B</b></td><td>Carte</td><td>172.16.3.10/24<br>Auto (SLAAC)<br>Auto</td><td>172.16.3.1<br>Auto</td><td>idem → il faut <code>ipv6 unicast-routing</code></td></tr>
+      </tbody></table></div>
+    <p class="note">Masque /24 = <b>255.255.255.0</b>. « Auto » côté IPv6 : tu ne tapes rien sur les PC, ils fabriquent leur GUA avec le préfixe 2001:fe:ab:2::/64 (ou :3::) annoncé par R1. La passerelle IPv6 auto = la link-local du routeur (fe80::1).</p>
+  </section>
+
+  <section class="card">
+    <h2>0 · Build the network (10 pts) & initialisation (−10 si ancienne config)</h2>
+    <div class="grid2">
+      <div>
+        <h4>Câbler</h4>
+        <ul>
+          <li>PC-A → S1 <b>F0/6</b> : câble <b>droit</b></li>
+          <li>S1 <b>F0/5</b> → R1 <b>G0/0/0</b> : câble <b>droit</b></li>
+          <li>R1 <b>G0/0/1</b> → PC-B : câble <b>croisé</b> (auto-MDIX : un droit marche aussi)</li>
+          <li>Câble <b>console bleu</b> : USB du PC hôte → port <b>CONSOLE</b> de l'équipement à configurer (tu le changes de place entre S1 et R1)</li>
+        </ul>
+        <p class="small muted">PC-A et PC-B sont des VM : le câble part d'une carte réseau de l'hôte, pontée vers la VM (VirtualBox → Réseau → Accès par pont).</p>
+        <h4>Ouvrir la console (PC hôte Ubuntu)</h4>
+        <pre class="code ans">sudo dmesg | grep -i tty      # → ttyUSB0
+sudo putty                    # Serial · /dev/ttyUSB0 · 9600 → Open → Entrée</pre>
+      </div>
+      <div>
+        <h4>Initialiser le switch</h4>
+        <pre class="code ans">Switch&gt; enable
+Switch# erase startup-config          ← Entrée
+Switch# delete vlan.dat               ← Entrée, Entrée
+Switch# configure terminal
+Switch(config)# sdm prefer dual-ipv4-and-ipv6 default
+                (ou : sdm prefer lanbase-routing)
+Switch(config)# end
+Switch# reload      Save? → no   [confirm] → Entrée
+… initial configuration dialog? [yes/no]: no</pre>
+        <h4>Initialiser le routeur</h4>
+        <pre class="code ans">Router&gt; enable
+Router# erase startup-config          ← Entrée
+Router# reload      Save? → no · dialog? → no</pre>
+        <p class="tip">💡 Le SDM n'est pris en compte qu'au <b>reload</b> : fais erase + delete + sdm, puis UN seul reload. Sans ça, <code>ipv6 address</code> sera refusé sur le switch.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>1 · Configure S1 (12 pts)</h2>
+    <div class="tbl-wrap"><table class="tbl ans-tbl">
+      <thead><tr><th>Task</th><th>Spec</th><th>Pts</th><th>Réponse (où taper)</th></tr></thead>
+      <tbody>
+        <tr><td>Disable DNS lookup</td><td></td><td class="num">2</td><td><span class="mode">(config)#</span><code class="ans">no ip domain-lookup</code></td></tr>
+        <tr><td>Switch name</td><td>S1-family_name</td><td class="num">2</td><td><span class="mode">(config)#</span><code class="ans">hostname S1-TonNom</code></td></tr>
+        <tr><td>Shutdown all unused interfaces</td><td></td><td class="num">3</td><td><span class="mode">(config)#</span><code class="ans">interface range f0/1-4 , f0/7-24 , g0/1-2</code><br><span class="mode">(config-if-range)#</span><code class="ans">shutdown</code><br><span class="small muted">On garde F0/5 (R1) et F0/6 (PC-A). Vérifie le nb de ports avec <code>show ip interface brief</code>.</span></td></tr>
+        <tr><td>Management Interface (SVI) on VLAN1</td><td>description (1) · IPv4 + gateway (2) · IPv6 LLA (2)</td><td class="num">5</td><td><pre class="code ans">interface vlan 1
+ description Management SVI
+ ip address 172.16.2.2 255.255.255.0
+ ipv6 address fe80::2 link-local
+ no shutdown
+ exit
+ip default-gateway 172.16.2.1</pre><span class="small muted">⚠ <code>ip default-gateway</code> se tape en (config)#, pas dans l'interface.</span></td></tr>
+      </tbody></table></div>
+  </section>
+
+  <section class="card">
+    <h2>2 · Configure R1 (30 pts)</h2>
+    <p class="small muted">Ordre conseillé : min-length AVANT les mots de passe ; hostname + domain AVANT la clé RSA ; username AVANT <code>login local</code>.</p>
+    <div class="tbl-wrap"><table class="tbl ans-tbl">
+      <thead><tr><th>Task</th><th>Spec</th><th>Pts</th><th>Réponse</th></tr></thead>
+      <tbody>
+        <tr><td>Disable DNS lookup</td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">no ip domain-lookup</code></td></tr>
+        <tr><td>Router name</td><td>R1-family_name</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">hostname R1-TonNom</code></td></tr>
+        <tr><td>Domain name</td><td>ccna-lab.com</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">ip domain-name ccna-lab.com</code></td></tr>
+        <tr><td>Minimum length for passwords</td><td>5 characters</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">security passwords min-length 5</code></td></tr>
+        <tr><td>Encrypted privileged EXEC password</td><td>class</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">enable secret class</code></td></tr>
+        <tr><td>Console access password</td><td>cisco</td><td class="num">1</td><td><pre class="code ans">line console 0
+ password cisco
+ login
+ logging synchronous     (bonus confort)
+ exit</pre></td></tr>
+        <tr><td>Administrative user in the local database</td><td>admin / admin1pass</td><td class="num">2</td><td><span class="mode">(config)#</span><code class="ans">username admin secret admin1pass</code></td></tr>
+        <tr><td>Generate an RSA crypto key</td><td>1024 bits modulus</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">crypto key generate rsa general-keys modulus 1024</code><br><span class="small muted">ou <code>crypto key generate rsa</code> puis répondre <b>1024</b>.</span></td></tr>
+        <tr><td>Login on vty lines uses local database</td><td></td><td class="num">1</td><td rowspan="2"><pre class="code ans">line vty 0 4
+ login local
+ transport input ssh
+ exit</pre></td></tr>
+        <tr><td>vty lines accept SSH only</td><td></td><td class="num">1</td></tr>
+        <tr><td>Encrypt the clear text passwords</td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">service password-encryption</code></td></tr>
+        <tr><td>Configure an MOTD Banner</td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">banner motd #Authorized Access Only!#</code></td></tr>
+        <tr><td>Enable IPv6 Routing</td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">ipv6 unicast-routing</code></td></tr>
+        <tr><td>Configure Interface G0/0/0</td><td>description (1) · IPv4 (2) · LLA (2) · IPv6 (2) · activate (1)</td><td class="num">8</td><td><pre class="code ans">interface g0/0/0
+ description Link to S1
+ ip address 172.16.2.1 255.255.255.0
+ ipv6 address fe80::1 link-local
+ ipv6 address 2001:fe:ab:2::1/64
+ no shutdown</pre></td></tr>
+        <tr><td>Configure Interface G0/0/1</td><td>idem</td><td class="num">8</td><td><pre class="code ans">interface g0/0/1
+ description Link to PC-B
+ ip address 172.16.3.1 255.255.255.0
+ ipv6 address fe80::1 link-local
+ ipv6 address 2001:fe:ab:3::1/64
+ no shutdown
+ end</pre></td></tr>
+      </tbody></table></div>
+    <details class="full"><summary>Tout R1 d'un bloc (à coller dans PuTTY)</summary>
+<pre class="code copyable">enable
+configure terminal
+no ip domain-lookup
+hostname R1-TonNom
+ip domain-name ccna-lab.com
+security passwords min-length 5
+enable secret class
+line console 0
+ password cisco
+ login
+ logging synchronous
+ exit
+username admin secret admin1pass
+crypto key generate rsa general-keys modulus 1024
+line vty 0 4
+ login local
+ transport input ssh
+ exit
+service password-encryption
+banner motd #Authorized Access Only!#
+ipv6 unicast-routing
+interface g0/0/0
+ description Link to S1
+ ip address 172.16.2.1 255.255.255.0
+ ipv6 address fe80::1 link-local
+ ipv6 address 2001:fe:ab:2::1/64
+ no shutdown
+interface g0/0/1
+ description Link to PC-B
+ ip address 172.16.3.1 255.255.255.0
+ ipv6 address fe80::1 link-local
+ ipv6 address 2001:fe:ab:3::1/64
+ no shutdown
+ end</pre></details>
+  </section>
+
+  <section class="card">
+    <h2>3 · Configure host computers (8 pts)</h2>
+    <div class="grid2">
+      <div>
+        <h4>PC-A · Windows 8 (VM)</h4>
+        <p>Set IPv4 address + gateway (2) — interface graphique : <kbd>Win</kbd>+<kbd>R</kbd> → <code>ncpa.cpl</code> → clic droit carte → Propriétés → IPv4 → 172.16.2.10 / 255.255.255.0 / 172.16.2.1. Ou en cmd <b>administrateur</b> :</p>
+        <pre class="code ans">netsh interface ipv4 set address name="Ethernet" static 172.16.2.10 255.255.255.0 172.16.2.1
+netsh advfirewall set allprofiles state off
+ipconfig</pre>
+        <p>Write down the IPv6 GUA (2) : dans <code>ipconfig</code>, la ligne <b>« Adresse IPv6 . . . : 2001:fe:ab:2:xxxx:xxxx:xxxx:xxxx »</b>. Pas la « temporaire », pas fe80.</p>
+      </div>
+      <div>
+        <h4>PC-B · Linux (VM)</h4>
+        <pre class="code ans">ip a                                          # nom de la carte (enp0s3 ?)
+sudo ip addr add 172.16.3.10/24 dev enp0s3
+sudo ip route add default via 172.16.3.1
+ip -6 addr show dev enp0s3                    # GUA = inet6 2001:fe:ab:3:… scope global</pre>
+        <p class="tip">💡 Pas de GUA ? → <code>ipv6 unicast-routing</code> manque sur R1 (pas de RA), ou l'interface du routeur est down. Attends ~10 s après l'avoir ajouté.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>4 · Test and verify end-to-end connectivity (24 pts)</h2>
+    <div class="tbl-wrap"><table class="tbl ans-tbl">
+      <thead><tr><th>Test</th><th>Pts</th><th>Commandes</th></tr></thead>
+      <tbody>
+        <tr><td>PCA → PCB : IPv4 + IPv6 GUA</td><td class="num">5+5</td><td><code class="ans">ping 172.16.3.10</code><br><code class="ans">ping 2001:fe:ab:3:…</code> <span class="small muted">(la GUA notée sur PC-B)</span></td></tr>
+        <tr><td colspan="3" class="sub">… et si ça échoue, on teste morceau par morceau :</td></tr>
+        <tr><td>PCA → G0/0/0 : IPv4, IPv6 LLA</td><td class="num">2</td><td><code class="ans">ping 172.16.2.1</code> · <code class="ans">ping fe80::1%12</code> <span class="small muted">(%12 = index de la carte vu dans ipconfig)</span></td></tr>
+        <tr><td>PCB → G0/0/1 : IPv4, IPv6 LLA</td><td class="num">2</td><td><code class="ans">ping -c 4 172.16.3.1</code> · <code class="ans">ping -6 -c 4 -I enp0s3 fe80::1</code></td></tr>
+        <tr><td>PCA → G0/0/1 : IPv4, IPv6 GUA</td><td class="num">2</td><td><code class="ans">ping 172.16.3.1</code> · <code class="ans">ping 2001:fe:ab:3::1</code></td></tr>
+        <tr><td>PCB → G0/0/0 : IPv4, IPv6 GUA</td><td class="num">2</td><td><code class="ans">ping -c 4 172.16.2.1</code> · <code class="ans">ping -c 4 2001:fe:ab:2::1</code></td></tr>
+        <tr><td>Other command : network delay and breaks in the path</td><td class="num">2</td><td><code class="ans">traceroute</code> (Linux) / <code class="ans">tracert</code> (Windows) — ex. <code>tracert 172.16.3.10</code></td></tr>
+        <tr><td>SSH between a Linux workstation and the router — leave it open</td><td class="num">4</td><td><code class="ans">ssh admin@172.16.3.1</code> → yes → admin1pass → <code>R1-TonNom&gt;</code><br><span class="small muted">Erreur d'algorithme : <code>ssh -o KexAlgorithms=+diffie-hellman-group14-sha1 -o HostKeyAlgorithms=+ssh-rsa admin@172.16.3.1</code></span></td></tr>
+      </tbody></table></div>
+    <p class="tip">💡 Ping PC-B → PC-A qui échoue alors que A → B marche ⇒ <b>pare-feu Windows</b>. Ping qui échoue partout ⇒ <code>show ip interface brief</code> sur R1 (administratively down ? → <code>no shutdown</code>).</p>
+  </section>
+
+  <section class="card">
+    <h2>5 · Use the IOS CLI to gather device information (16 pts)</h2>
+    <div class="tbl-wrap"><table class="tbl ans-tbl">
+      <thead><tr><th>Description</th><th>Commande (sur R1, en #)</th></tr></thead>
+      <tbody>
+        <tr><td>Summary of important information about the IPv4 interfaces</td><td><code class="ans">show ip interface brief</code></td></tr>
+        <tr><td>IPv4 routing table</td><td><code class="ans">show ip route</code></td></tr>
+        <tr><td>Layer 2 to Layer 3 mapping of addresses</td><td><code class="ans">show arp</code> <span class="small muted">(= show ip arp)</span></td></tr>
+        <tr><td>Detailed IPv4 information about interface G0/0/0</td><td><code class="ans">show ip interface g0/0/0</code> <span class="small muted">(pas « show interfaces »)</span></td></tr>
+        <tr><td>IPv6 routing table</td><td><code class="ans">show ipv6 route</code></td></tr>
+        <tr><td>Summary of IPv6 interface addresses and status</td><td><code class="ans">show ipv6 interface brief</code></td></tr>
+        <tr><td>On the switch : MAC address of the devices connected to the ports</td><td><code class="ans">show mac address-table</code> <span class="small muted">(sur S1)</span></td></tr>
+        <tr><td>Save the current configuration for the next start</td><td><code class="ans">copy running-config startup-config</code></td></tr>
+      </tbody></table></div>
+  </section>
+
+  <section class="card">
+    <h2>6 · Cleanup (−10 si pas fait) — SEULEMENT après la correction</h2>
+    <pre class="code ans">R1#  erase startup-config      (+ reload ou éteindre)
+S1#  erase startup-config
+S1#  delete vlan.dat
+→ débrancher et ranger les câbles, éteindre routeur et switch</pre>
+  </section>
+
+  <section class="card warnbox">
+    <h2>⚠ Les 10 pièges de cette annale</h2>
+    <ol>
+      <li>Oublier d'écrire son <b>nom</b> (−5) et de mettre son nom dans le hostname.</li>
+      <li>Ne pas effacer l'ancienne config (−10) → toujours <code>show running-config</code> au début.</li>
+      <li>Oublier le <b>SDM</b> → l'IPv6 du switch est refusée.</li>
+      <li><code>crypto key</code> avant <code>hostname</code>/<code>ip domain-name</code> → refusé.</li>
+      <li><code>min-length 5</code> : tout mot de passe &lt; 5 caractères est refusé.</li>
+      <li>Oublier <code>no shutdown</code> sur les interfaces du routeur (éteintes par défaut).</li>
+      <li>Oublier <code>ipv6 unicast-routing</code> → les PC n'ont pas de GUA « Auto ».</li>
+      <li>Pare-feu Windows actif → les pings vers PC-A échouent.</li>
+      <li>Ping d'une link-local sans <code>%index</code> (Windows) ou <code>-I enp0s3</code> (Linux).</li>
+      <li>Fermer la session SSH ou nettoyer avant que le prof ait corrigé.</li>
+    </ol>
+  </section>
+  </div>
+</section>
+
+<!-- ===================== FICHE A4 ===================== -->
+<section class="page" id="p-a4" data-page="a4">
+  <div class="noprint">
+    <h1>Fiche A4 recto-verso</h1>
+    <p class="lead">Ta feuille autorisée. <b>Recto</b> = la séquence complète de l'annale dans l'ordre. <b>Verso</b> = « quand l'énoncé dit… je tape… », dépannage, Linux/Windows, bonus VLAN/DHCP/routes. Imprime en <b>A4, recto-verso, échelle 100 %, sans marges ajoutées</b>.</p>
+    <div class="bar"><button class="btn" id="printA4" type="button">🖨 Imprimer la fiche</button> <span class="small muted" id="a4fit"></span></div>
+  </div>
+  <div class="sheets">
+  <!-- RECTO -->
+  <article class="sheet" id="sheet1" aria-label="Fiche recto">
+    <header class="sh-h"><b>SR71 · TP machine · RECTO</b><span>NOM : ________________ · hôte Ubuntu (PuTTY) · PC-A Win8 · PC-B Linux · S1 2960 · R1 ISR4321</span></header>
+    <div class="sh-cols">
+      <div class="blk"><h5>0 · Console (hôte Ubuntu)</h5>
+<pre>sudo dmesg | grep -i tty     → ttyUSB0
+sudo putty  → Serial · /dev/ttyUSB0 · 9600
+Entrée pour réveiller. CONSOLE ≠ AUX
+Coller = clic droit/milieu, par petits blocs
+VM : Réseau → Accès par pont + câble branché</pre></div>
+      <div class="blk"><h5>Câbles</h5>
+<pre>PC/R ↔ S : DROIT · PC ↔ R, S ↔ S : CROISÉ
+console : câble BLEU → port CONSOLE</pre></div>
+      <div class="blk"><h5>1 · Init SWITCH (−10 si oubli)</h5>
+<pre>en
+erase startup-config        ⏎
+delete vlan.dat             ⏎ ⏎
+conf t
+sdm prefer dual-ipv4-and-ipv6 default
+  (ou sdm prefer lanbase-routing)
+end
+reload   Save? no · ⏎ · dialog? no
+show sdm prefer   (vérif IPv6)</pre></div>
+      <div class="blk"><h5>Init ROUTEUR</h5>
+<pre>en · erase startup-config ⏎ · reload (no)</pre></div>
+      <div class="blk"><h5>2 · S1 (12 pts)</h5>
+<pre>en
+conf t
+no ip domain-lookup
+hostname S1-NOM
+interface range f0/1-4 , f0/7-24 , g0/1-2
+ shutdown          (garder F0/5 et F0/6)
+interface vlan 1
+ description Management SVI
+ ip address 172.16.2.2 255.255.255.0
+ ipv6 address fe80::2 link-local
+ no shutdown
+ exit
+ip default-gateway 172.16.2.1   ← en (config)#
+end</pre></div>
+      <div class="blk"><h5>3 · R1 (30 pts) — ordre important</h5>
+<pre>en
+conf t
+no ip domain-lookup
+hostname R1-NOM                ┐ avant
+ip domain-name ccna-lab.com    ┘ la clé
+security passwords min-length 5  ← avant mdp
+enable secret class
+line console 0
+ password cisco
+ login
+ logging synchronous
+ exit
+username admin secret admin1pass
+crypto key generate rsa modulus 1024
+  (ou crypto key generate rsa → 1024)
+line vty 0 4
+ login local
+ transport input ssh
+ exit
+service password-encryption
+banner motd #Authorized Access Only!#
+ipv6 unicast-routing     ← GUA auto des PC
+interface g0/0/0
+ description Link to S1
+ ip address 172.16.2.1 255.255.255.0
+ ipv6 address fe80::1 link-local
+ ipv6 address 2001:fe:ab:2::1/64
+ no shutdown
+interface g0/0/1
+ description Link to PC-B
+ ip address 172.16.3.1 255.255.255.0
+ ipv6 address fe80::1 link-local
+ ipv6 address 2001:fe:ab:3::1/64
+ no shutdown
+ end
+copy running-config startup-config</pre></div>
+      <div class="blk"><h5>4 · PC (8 pts)</h5>
+<pre><b>PC-A Windows</b> (cmd admin) · ou Win+R ncpa.cpl
+netsh interface ipv4 set address
+  name="Ethernet" static 172.16.2.10
+  255.255.255.0 172.16.2.1
+netsh advfirewall set allprofiles state off
+ipconfig → GUA « Adresse IPv6 » 2001:fe:ab:2:…
+<b>PC-B Linux</b> (carte : ip a → enp0s3)
+sudo ip addr add 172.16.3.10/24 dev enp0s3
+sudo ip route add default via 172.16.3.1
+ip -6 a → inet6 2001:fe:ab:3:… scope global</pre></div>
+      <div class="blk"><h5>5 · Tests (24 pts)</h5>
+<pre>A→B  ping 172.16.3.10 · ping &lt;GUA de B&gt;
+A→G0/0/0  ping 172.16.2.1 · ping fe80::1%12
+B→G0/0/1  ping -c4 172.16.3.1
+          ping -6 -c4 -I enp0s3 fe80::1
+A→G0/0/1 ping 172.16.3.1 · ping 2001:fe:ab:3::1
+B→G0/0/0 ping -c4 172.16.2.1 · …2001:fe:ab:2::1
+Délai/coupures : tracert (Win) · traceroute
+SSH (laisser ouvert) depuis PC-B :
+ssh admin@172.16.3.1
+ si erreur d'algo, ajouter :
+ -o KexAlgorithms=+diffie-hellman-group14-sha1
+ -o HostKeyAlgorithms=+ssh-rsa</pre></div>
+      <div class="blk"><h5>6 · show (16 pts, sur R1 en #)</h5>
+<pre>résumé IPv4 .. show ip interface brief
+table IPv4 ... show ip route
+L2↔L3 MAC/IP . show arp
+détail G0/0/0  show ip interface g0/0/0
+table IPv6 ... show ipv6 route
+résumé IPv6 .. show ipv6 interface brief
+MAC (switch) . show mac address-table
+sauver ....... copy running-config startup-config</pre></div>
+      <div class="blk"><h5>7 · Nettoyage (APRÈS correction)</h5>
+<pre>R1# erase startup-config
+S1# erase startup-config · delete vlan.dat
+ranger câbles · éteindre</pre></div>
+      <div class="blk"><h5>Stratégie (≈ 55 min)</h5>
+<pre>1. NOM sur la copie · show run (vieille conf ?)
+2. Init S1 pendant que R1 s'efface/reboot
+3. S1 (≈8 min) → R1 (≈20 min) → PC (≈5 min)
+4. Tests dans l'ordre, noter les GUA
+5. SSH ouvert · show (partie 4) sur la copie
+Copier-coller depuis gedit = gain de temps
+Vérifier : show ip int brief / show run</pre></div>
+      <div class="blk"><h5>Un ping échoue ? (du plus près au plus loin)</h5>
+<pre>1. ipconfig / ip a : IP, masque, passerelle ?
+2. ping la passerelle → sinon câble/VM/port
+3. R1 : show ip int brief → up/up ? no shut ?
+4. ping vers Windows KO → pare-feu
+5. IPv6 : unicast-routing ? GUA présente ?
+6. LLA : %index (Win) · -I enp0s3 (Linux)
+7. S1 injoignable d'ailleurs → default-gateway</pre></div>
+    </div>
+  </article>
+
+  <!-- VERSO -->
+  <article class="sheet" id="sheet2" aria-label="Fiche verso">
+    <header class="sh-h"><b>SR71 · VERSO</b><span>Énoncé → commande · dépannage · bonus TP</span></header>
+    <div class="sh-cols">
+      <div class="blk"><h5>Modes IOS</h5>
+<pre>R&gt;  enable →  R#  conf t →  R(config)#
+interface g0/0/0 → (config-if)#
+line console 0 / line vty 0 4 → (config-line)#
+exit = 1 niveau · end / Ctrl+Z = vers #
+do show … = show depuis (config)#
+? = aide · Tab = compléter · ↑ historique
+Ctrl+Maj+6 = annuler (Translating…/ping)</pre></div>
+      <div class="blk"><h5>Quand l'énoncé dit… → je tape</h5>
+<pre>Disable DNS    no ip domain-lookup
+Router name    hostname R1-NOM
+Domain name    ip domain-name ccna-lab.com
+Min length pw  security passwords min-length 5
+Encrypted priv enable secret class
+Console pw     line con 0 · password X · login
+Local user     username U secret P
+RSA key        crypto key generate rsa
+               modulus 1024 (ou répondre 1024)
+vty local db   line vty 0 4 · login local
+vty SSH only   transport input ssh
+Encrypt clear  service password-encryption
+MOTD banner    banner motd #texte#
+IPv6 routing   ipv6 unicast-routing
+Description    description X
+L3 IPv4        ip address IP MASQUE
+IPv6 LLA       ipv6 address fe80::1 link-local
+L3 IPv6        ipv6 address 2001:…::1/64
+Activate       no shutdown
+Unused ports   interface range … · shutdown
+SVI VLAN1      interface vlan 1
+Switch GW      ip default-gateway IP
+SDM IPv6       sdm prefer dual-ipv4-and-ipv6
+               default (+ end + reload)
+Erase startup  erase startup-config
+Erase VLANs    delete vlan.dat
+Save           copy run start (= write)
+IOS version    show version
+Telnet (TP1)   line vty 0 15 · password · login
+SSH v2         ip ssh version 2</pre></div>
+      <div class="blk"><h5>Dépannage express</h5>
+<pre>Translating "…" → no ip domain-lookup
+   (Ctrl+Maj+6 pour couper)
+ipv6 refusé (switch) → SDM + reload
+% …define a domain-name → ip domain-name
+% …define a hostname → hostname ≠ Router
+% Password too short → min-length
+administratively down → no shutdown
+down/down → câble, port, VM pas pontée
+B→A KO mais A→B OK → pare-feu Windows
+PC sans GUA → ipv6 unicast-routing / int down
+switch injoignable d'un autre LAN
+   → ip default-gateway
+Connection refused (ssh) → clé RSA / transport
+Login invalid → login local + username
+no matching key exchange → -o KexAlgorithms=+…
+Windows ping fe80 → %index
+.!!!! → normal (ARP au 1er paquet)
+PuTTY noir → port/9600/sudo/Entrée/CONSOLE</pre></div>
+      <div class="blk"><h5>Linux (PC-B)</h5>
+<pre>ip a · ip -6 a · ip route · ip neigh
+sudo ip link set enp0s3 up
+sudo ip addr add|del IP/24 dev enp0s3
+sudo ip addr flush dev enp0s3
+sudo ip route add default via GW
+sudo ip -6 addr add X/64 dev enp0s3
+ping -c4 X · ping -6 -I enp0s3 fe80::1
+traceroute X · ssh admin@X · telnet X
+sudo dhclient -v enp0s3 (DHCP)</pre></div>
+      <div class="blk"><h5>Windows (PC-A)</h5>
+<pre>ipconfig · ipconfig /all (MAC) · arp -a
+route print · ncpa.cpl
+netsh interface show interface (nom)
+ping X · ping -t X · ping fe80::1%12
+tracert X · ipconfig /release · /renew
+netsh advfirewall set allprofiles state off</pre></div>
+      <div class="blk"><h5>Vérifier (switch/routeur)</h5>
+<pre>show running-config · show startup-config
+show ip interface brief · show ipv6 int brief
+show interfaces vlan 1 (MAC, bia)
+show mac address-table · clear mac addr dyn
+show ip ssh · show version · show sdm prefer
+show vlan brief · show interfaces trunk</pre></div>
+      <div class="blk"><h5>Bonus VLAN / trunk / inter-VLAN</h5>
+<pre>vlan 10 · name Operations
+int f0/6 · switchport mode access
+         · switchport access vlan 10
+int f0/1 · switchport mode trunk
+ switchport trunk native vlan 1000
+ switchport trunk allowed vlan 10,20,1000
+R: int g0/0/1.10 · encapsulation dot1Q 10
+   ip address 192.168.10.1 255.255.255.0
+   int g0/0/1.1000 · encap dot1Q 1000 native
+   int g0/0/1 · no shutdown</pre></div>
+      <div class="blk"><h5>Bonus routes / DHCP</h5>
+<pre>ip route 0.0.0.0 0.0.0.0 NEXT-HOP
+ip route RESEAU MASQUE NEXT-HOP [AD]
+ipv6 route ::/0 NEXT-HOP
+ip dhcp excluded-address A B
+ip dhcp pool P · network N M
+ default-router GW · domain-name D
+int … · ip helper-address SERVEUR
+show ip dhcp binding</pre></div>
+      <div class="blk"><h5>IPv6 / masques</h5>
+<pre>fe80::/10 link-local (jamais routée)
+2000::/3 GUA · ff02::1 tous nœuds
+ff02::2 tous routeurs · SLAAC = préfixe RA
++ ID (EUI-64 : MAC + FFFE, 7ᵉ bit inversé)
+/24 255.255.255.0   /25 .128  /26 .192
+/27 .224  /28 .240  /29 .248  /30 .252</pre></div>
+      <div class="blk"><h5>Réponses courtes (questions TP)</h5>
+<pre>IP sur switch → administration à distance
+bia = MAC gravée · OUI = 3 1ers octets
+MAC broadcast = FFFF.FFFF.FFFF
+table MAC = MAC SOURCE + port d'arrivée
+route : C connecté · L local /32 · S statique
+secret = hash · password = clair (7 si spe)
+fe80::1 sur 2 interfaces OK (local au lien)
+SSH > Telnet : chiffré · Ctrl+Maj+6 x = sortir</pre></div>
+    </div>
+  </article>
+  </div>
+</section>
+
+<!-- ===================== PAGES DYNAMIQUES ===================== -->
+<section class="page" id="p-commandes" data-page="commandes">
+  <h1>Commandes par machine</h1>
+  <p class="lead">Qui tape quoi, et où. ★★★ = dans l'annale · ★★ = vu en TP · ★ = bonus. Clique sur une commande pour la copier.</p>
+  <div class="mtabs" id="mtabs" role="tablist"></div>
+  <div id="mbody"></div>
+</section>
+
+<section class="page" id="p-enonce" data-page="enonce">
+  <h1>Énoncé → commande</h1>
+  <p class="lead">L'énoncé est en anglais. Ce tableau traduit chaque formulation en commande, avec le mode où la taper. Filtre, cherche, puis teste-toi.</p>
+  <div class="bar">
+    <input type="search" id="phSearch" placeholder="Chercher (ex. dns, ssh, gateway, ping…)" aria-label="Chercher une formulation">
+    <div class="chips" id="phCats"></div>
+  </div>
+  <div class="tbl-wrap"><table class="tbl" id="phTable"><thead><tr><th>L'énoncé dit…</th><th>Je tape</th><th>Où</th></tr></thead><tbody></tbody></table></div>
+  <h3>Vocabulaire des énoncés</h3>
+  <div class="vocab" id="vocab"></div>
+</section>
+
+<section class="page" id="p-simulateur" data-page="simulateur">
+  <h1>Simulateur IOS</h1>
+  <p class="lead">Une console comme dans PuTTY. Choisis une mission, tape les commandes ; les objectifs se cochent tout seuls. Il gère les abréviations (<code>conf t</code>, <code>sh ip int br</code>), l'aide <code>?</code>, la touche Tab et les erreurs typiques (DNS, SDM, clé RSA, min-length…).</p>
+  <div id="sim"></div>
+</section>
+
+<section class="page" id="p-cablage" data-page="cablage">
+  <h1>Labo de câblage</h1>
+  <p class="lead">Choisis le type de câble, clique sur un port puis sur l'autre. Respecte les numéros de ports de l'énoncé. Clique sur un câble pour le retirer.</p>
+  <div id="cab"></div>
+  <div class="grid3 small">
+    <div class="card"><h4>🔵 Droit</h4><p>Entre types <b>différents</b> : PC ↔ switch, routeur ↔ switch.</p></div>
+    <div class="card"><h4>🟠 Croisé</h4><p>Entre <b>mêmes</b> types : switch ↔ switch, PC ↔ routeur (PC et routeur sont tous deux des « terminaux »). L'auto-MDIX rend souvent le droit fonctionnel, mais l'énoncé attend la théorie.</p></div>
+    <div class="card"><h4>🟣 Console</h4><p>Câble bleu RJ45 ↔ USB/série, de l'hôte vers le port <b>CONSOLE</b> (pas AUX). PuTTY : Serial, 9600.</p></div>
+  </div>
+</section>
+
+<section class="page" id="p-exos" data-page="exos">
+  <h1>Exercices</h1>
+  <p class="lead">Six entraînements courts. Tes meilleurs scores sont gardés sur la page d'accueil.</p>
+  <div class="xtabs" id="xtabs" role="tablist"></div>
+  <div id="xbody" class="card"></div>
+</section>
+
+<section class="page" id="p-examen" data-page="examen">
+  <h1>Examen blanc</h1>
+  <p class="lead">Même structure et même barème que l'annale, avec des adresses, masques, mots de passe et ports tirés au hasard. Fais-le chrono en main (sur papier ou dans le simulateur), puis ouvre la correction.</p>
+  <div id="exam"></div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>Révision personnelle SR71 · d'après les TP (TP1 → TP3-2, labs Cisco VLAN, inter-VLAN, DHCPv4/v6, routes statiques, VLSM) et une annale. Le simulateur est pédagogique : il ne remplace pas le vrai matériel.</p>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/data.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/cabling.js"></script>
+<script src="js/exam.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
