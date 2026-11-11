@@ -3,7 +3,6 @@
 Site de révision pour l'évaluation de TP réseaux SR71 (Cisco CCNA 1) sur machine :
 PC hôte Ubuntu (PuTTY → console), PC-A VM Windows 8, PC-B VM Linux, switch Catalyst 2960, routeur ISR 4321.
 
-**En ligne :** https://gustor1.github.io/sr71-revision-tp/
 
 ## Contenu
 
