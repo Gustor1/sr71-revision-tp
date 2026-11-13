@@ -102,6 +102,11 @@
     <button class="btn ghost" type="button" data-sim="annale-s1">Refaire S1 dans le simulateur</button>
   </div>
 
+  <div class="card srcbox">
+    <p><b>D'où vient chaque tâche ?</b> J'ai comparé l'annale (cursus normal) à tes TP d'alternance : <b>~95 % des points</b> correspondent à tes TP maison (TP1 → TP3-2).</p>
+    <p class="legend"><span class="src ok">TPx</span> fait en TP · <span class="src var">Variante</span> commande proche de celle du TP · <span class="src lab">Labs Cisco</span> seulement dans les labs Cisco du dossier · <span class="src new">Pas vu en TP</span> à apprendre en plus</p>
+    <p class="small muted">À retenir en plus : <code>security passwords min-length 5</code>, éteindre les ports inutilisés (<code>interface range … · shutdown</code>), <code>transport input ssh</code> seul, <code>show ip interface g0/0/0</code>, <code>show ipv6 route</code>. Pas dans l'annale mais vus en TP : aide <code>?</code> / <code>clock</code>, Telnet, analyse MAC (OUI, bia) ; et dans les labs Cisco : VLAN, inter-VLAN, DHCP, routes statiques, sous-réseaux.</p>
+  </div>
   <details class="photos"><summary>📷 Voir les photos du sujet original (4 pages)</summary>
     <div class="photo-grid">
       <a href="img/IMG_6158.jpg" target="_blank" rel="noopener"><img src="img/IMG_6158.jpg" alt="Annale page 1 : topologie et table d'adressage" loading="lazy"></a>
@@ -141,7 +146,7 @@
     <h2>0 · Build the network (10 pts) & initialisation (−10 si ancienne config)</h2>
     <div class="grid2">
       <div>
-        <h4>Câbler</h4>
+        <h4>Câbler <span class="src ok">TP1</span> <span class="src ok">TP2-2</span></h4>
         <ul>
           <li>PC-A → S1 <b>F0/6</b> : câble <b>droit</b></li>
           <li>S1 <b>F0/5</b> → R1 <b>G0/0/0</b> : câble <b>droit</b></li>
@@ -149,12 +154,12 @@
           <li>Câble <b>console bleu</b> : USB du PC hôte → port <b>CONSOLE</b> de l'équipement à configurer (tu le changes de place entre S1 et R1)</li>
         </ul>
         <p class="small muted">PC-A et PC-B sont des VM : le câble part d'une carte réseau de l'hôte, pontée vers la VM (VirtualBox → Réseau → Accès par pont).</p>
-        <h4>Ouvrir la console (PC hôte Ubuntu)</h4>
+        <h4>Ouvrir la console (PC hôte Ubuntu) <span class="src ok">TP1</span></h4>
         <pre class="code ans">sudo dmesg | grep -i tty      # → ttyUSB0
 sudo putty                    # Serial · /dev/ttyUSB0 · 9600 → Open → Entrée</pre>
       </div>
       <div>
-        <h4>Initialiser le switch</h4>
+        <h4>Initialiser le switch <span class="src ok">TP1</span> <span class="src ok">TP2-1</span> <span class="src ok">TP3-1 (SDM)</span></h4>
         <pre class="code ans">Switch&gt; enable
 Switch# erase startup-config          ← Entrée
 Switch# delete vlan.dat               ← Entrée, Entrée
@@ -164,7 +169,7 @@ Switch(config)# sdm prefer dual-ipv4-and-ipv6 default
 Switch(config)# end
 Switch# reload      Save? → no   [confirm] → Entrée
 … initial configuration dialog? [yes/no]: no</pre>
-        <h4>Initialiser le routeur</h4>
+        <h4>Initialiser le routeur <span class="src ok">TP2-2</span></h4>
         <pre class="code ans">Router&gt; enable
 Router# erase startup-config          ← Entrée
 Router# reload      Save? → no · dialog? → no</pre>
@@ -178,10 +183,10 @@ Router# reload      Save? → no · dialog? → no</pre>
     <div class="tbl-wrap"><table class="tbl ans-tbl">
       <thead><tr><th>Task</th><th>Spec</th><th>Pts</th><th>Réponse (où taper)</th></tr></thead>
       <tbody>
-        <tr><td>Disable DNS lookup</td><td></td><td class="num">2</td><td><span class="mode">(config)#</span><code class="ans">no ip domain-lookup</code></td></tr>
-        <tr><td>Switch name</td><td>S1-family_name</td><td class="num">2</td><td><span class="mode">(config)#</span><code class="ans">hostname S1-TonNom</code></td></tr>
-        <tr><td>Shutdown all unused interfaces</td><td></td><td class="num">3</td><td><span class="mode">(config)#</span><code class="ans">interface range f0/1-4 , f0/7-24 , g0/1-2</code><br><span class="mode">(config-if-range)#</span><code class="ans">shutdown</code><br><span class="small muted">On garde F0/5 (R1) et F0/6 (PC-A). Vérifie le nb de ports avec <code>show ip interface brief</code>.</span></td></tr>
-        <tr><td>Management Interface (SVI) on VLAN1</td><td>description (1) · IPv4 + gateway (2) · IPv6 LLA (2)</td><td class="num">5</td><td><pre class="code ans">interface vlan 1
+        <tr><td>Disable DNS lookup <span class="src ok">TP1</span></td><td></td><td class="num">2</td><td><span class="mode">(config)#</span><code class="ans">no ip domain-lookup</code></td></tr>
+        <tr><td>Switch name <span class="src ok">TP1</span></td><td>S1-family_name</td><td class="num">2</td><td><span class="mode">(config)#</span><code class="ans">hostname S1-TonNom</code></td></tr>
+        <tr><td>Shutdown all unused interfaces <span class="src lab">Labs Cisco seulement</span><br><span class="small muted">Inter-VLAN et DHCPv4 (« désactivez les ports inutilisés »), pas dans tes TP maison</span></td><td></td><td class="num">3</td><td><span class="mode">(config)#</span><code class="ans">interface range f0/1-4 , f0/7-24 , g0/1-2</code><br><span class="mode">(config-if-range)#</span><code class="ans">shutdown</code><br><span class="small muted">On garde F0/5 (R1) et F0/6 (PC-A). Vérifie le nb de ports avec <code>show ip interface brief</code>.</span></td></tr>
+        <tr><td>Management Interface (SVI) on VLAN1 <span class="src ok">TP1</span> <span class="src ok">TP2-2</span> <span class="src ok">TP3-1</span></td><td>description (1) · IPv4 + gateway (2) · IPv6 LLA (2)</td><td class="num">5</td><td><pre class="code ans">interface vlan 1
  description Management SVI
  ip address 172.16.2.2 255.255.255.0
  ipv6 address fe80::2 link-local
@@ -197,33 +202,33 @@ ip default-gateway 172.16.2.1</pre><span class="small muted">⚠ <code>ip defaul
     <div class="tbl-wrap"><table class="tbl ans-tbl">
       <thead><tr><th>Task</th><th>Spec</th><th>Pts</th><th>Réponse</th></tr></thead>
       <tbody>
-        <tr><td>Disable DNS lookup</td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">no ip domain-lookup</code></td></tr>
-        <tr><td>Router name</td><td>R1-family_name</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">hostname R1-TonNom</code></td></tr>
-        <tr><td>Domain name</td><td>ccna-lab.com</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">ip domain-name ccna-lab.com</code></td></tr>
-        <tr><td>Minimum length for passwords</td><td>5 characters</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">security passwords min-length 5</code></td></tr>
-        <tr><td>Encrypted privileged EXEC password</td><td>class</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">enable secret class</code></td></tr>
-        <tr><td>Console access password</td><td>cisco</td><td class="num">1</td><td><pre class="code ans">line console 0
+        <tr><td>Disable DNS lookup <span class="src ok">TP1</span></td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">no ip domain-lookup</code></td></tr>
+        <tr><td>Router name <span class="src ok">TP2-2</span></td><td>R1-family_name</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">hostname R1-TonNom</code></td></tr>
+        <tr><td>Domain name <span class="src ok">TP3-2</span></td><td>ccna-lab.com</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">ip domain-name ccna-lab.com</code></td></tr>
+        <tr><td>Minimum length for passwords <span class="src new">Pas vu en TP</span></td><td>5 characters</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">security passwords min-length 5</code></td></tr>
+        <tr><td>Encrypted privileged EXEC password <span class="src ok">TP1</span></td><td>class</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">enable secret class</code></td></tr>
+        <tr><td>Console access password <span class="src ok">TP1</span></td><td>cisco</td><td class="num">1</td><td><pre class="code ans">line console 0
  password cisco
  login
  logging synchronous     (bonus confort)
  exit</pre></td></tr>
-        <tr><td>Administrative user in the local database</td><td>admin / admin1pass</td><td class="num">2</td><td><span class="mode">(config)#</span><code class="ans">username admin secret admin1pass</code></td></tr>
-        <tr><td>Generate an RSA crypto key</td><td>1024 bits modulus</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">crypto key generate rsa general-keys modulus 1024</code><br><span class="small muted">ou <code>crypto key generate rsa</code> puis répondre <b>1024</b>.</span></td></tr>
-        <tr><td>Login on vty lines uses local database</td><td></td><td class="num">1</td><td rowspan="2"><pre class="code ans">line vty 0 4
+        <tr><td>Administrative user in the local database <span class="src ok">TP3-2</span></td><td>admin / admin1pass</td><td class="num">2</td><td><span class="mode">(config)#</span><code class="ans">username admin secret admin1pass</code></td></tr>
+        <tr><td>Generate an RSA crypto key <span class="src ok">TP3-2</span></td><td>1024 bits modulus</td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">crypto key generate rsa general-keys modulus 1024</code><br><span class="small muted">ou <code>crypto key generate rsa</code> puis répondre <b>1024</b>.</span></td></tr>
+        <tr><td>Login on vty lines uses local database <span class="src ok">TP3-2</span></td><td></td><td class="num">1</td><td rowspan="2"><pre class="code ans">line vty 0 4
  login local
  transport input ssh
  exit</pre></td></tr>
-        <tr><td>vty lines accept SSH only</td><td></td><td class="num">1</td></tr>
-        <tr><td>Encrypt the clear text passwords</td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">service password-encryption</code></td></tr>
-        <tr><td>Configure an MOTD Banner</td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">banner motd #Authorized Access Only!#</code></td></tr>
-        <tr><td>Enable IPv6 Routing</td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">ipv6 unicast-routing</code></td></tr>
-        <tr><td>Configure Interface G0/0/0</td><td>description (1) · IPv4 (2) · LLA (2) · IPv6 (2) · activate (1)</td><td class="num">8</td><td><pre class="code ans">interface g0/0/0
+        <tr><td>vty lines accept SSH only <span class="src var">Variante TP3-2</span><br><span class="small muted">En TP : <code>transport input telnet ssh</code></span></td><td></td><td class="num">1</td></tr>
+        <tr><td>Encrypt the clear text passwords <span class="src ok">TP1</span></td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">service password-encryption</code></td></tr>
+        <tr><td>Configure an MOTD Banner <span class="src ok">TP1</span></td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">banner motd #Authorized Access Only!#</code></td></tr>
+        <tr><td>Enable IPv6 Routing <span class="src ok">TP2-2</span> <span class="src ok">TP3-1</span></td><td></td><td class="num">1</td><td><span class="mode">(config)#</span><code class="ans">ipv6 unicast-routing</code></td></tr>
+        <tr><td>Configure Interface G0/0/0 <span class="src ok">TP2-2</span> <span class="src ok">TP3-1</span></td><td>description (1) · IPv4 (2) · LLA (2) · IPv6 (2) · activate (1)</td><td class="num">8</td><td><pre class="code ans">interface g0/0/0
  description Link to S1
  ip address 172.16.2.1 255.255.255.0
  ipv6 address fe80::1 link-local
  ipv6 address 2001:fe:ab:2::1/64
  no shutdown</pre></td></tr>
-        <tr><td>Configure Interface G0/0/1</td><td>idem</td><td class="num">8</td><td><pre class="code ans">interface g0/0/1
+        <tr><td>Configure Interface G0/0/1 <span class="src ok">TP2-2</span> <span class="src ok">TP3-1</span></td><td>idem</td><td class="num">8</td><td><pre class="code ans">interface g0/0/1
  description Link to PC-B
  ip address 172.16.3.1 255.255.255.0
  ipv6 address fe80::1 link-local
@@ -272,7 +277,7 @@ interface g0/0/1
     <h2>3 · Configure host computers (8 pts)</h2>
     <div class="grid2">
       <div>
-        <h4>PC-A · Windows 8 (VM)</h4>
+        <h4>PC-A · Windows 8 (VM) <span class="src ok">TP1</span> <span class="src ok">TP3-1 (GUA)</span></h4>
         <p>Set IPv4 address + gateway (2) — interface graphique : <kbd>Win</kbd>+<kbd>R</kbd> → <code>ncpa.cpl</code> → clic droit carte → Propriétés → IPv4 → 172.16.2.10 / 255.255.255.0 / 172.16.2.1. Ou en cmd <b>administrateur</b> :</p>
         <pre class="code ans">netsh interface ipv4 set address name="Ethernet" static 172.16.2.10 255.255.255.0 172.16.2.1
 netsh advfirewall set allprofiles state off
@@ -280,7 +285,7 @@ ipconfig</pre>
         <p>Write down the IPv6 GUA (2) : dans <code>ipconfig</code>, la ligne <b>« Adresse IPv6 . . . : 2001:fe:ab:2:xxxx:xxxx:xxxx:xxxx »</b>. Pas la « temporaire », pas fe80.</p>
       </div>
       <div>
-        <h4>PC-B · Linux (VM)</h4>
+        <h4>PC-B · Linux (VM) <span class="src ok">TP1</span> <span class="src ok">TP3-1 (GUA)</span></h4>
         <pre class="code ans">ip a                                          # nom de la carte (enp0s3 ?)
 sudo ip addr add 172.16.3.10/24 dev enp0s3
 sudo ip route add default via 172.16.3.1
@@ -295,14 +300,14 @@ ip -6 addr show dev enp0s3                    # GUA = inet6 2001:fe:ab:3:… sco
     <div class="tbl-wrap"><table class="tbl ans-tbl">
       <thead><tr><th>Test</th><th>Pts</th><th>Commandes</th></tr></thead>
       <tbody>
-        <tr><td>PCA → PCB : IPv4 + IPv6 GUA</td><td class="num">5+5</td><td><code class="ans">ping 172.16.3.10</code><br><code class="ans">ping 2001:fe:ab:3:…</code> <span class="small muted">(la GUA notée sur PC-B)</span></td></tr>
+        <tr><td>PCA → PCB : IPv4 + IPv6 GUA <span class="src ok">TP3-1</span></td><td class="num">5+5</td><td><code class="ans">ping 172.16.3.10</code><br><code class="ans">ping 2001:fe:ab:3:…</code> <span class="small muted">(la GUA notée sur PC-B)</span></td></tr>
         <tr><td colspan="3" class="sub">… et si ça échoue, on teste morceau par morceau :</td></tr>
-        <tr><td>PCA → G0/0/0 : IPv4, IPv6 LLA</td><td class="num">2</td><td><code class="ans">ping 172.16.2.1</code> · <code class="ans">ping fe80::1%12</code> <span class="small muted">(%12 = index de la carte vu dans ipconfig)</span></td></tr>
-        <tr><td>PCB → G0/0/1 : IPv4, IPv6 LLA</td><td class="num">2</td><td><code class="ans">ping -c 4 172.16.3.1</code> · <code class="ans">ping -6 -c 4 -I enp0s3 fe80::1</code></td></tr>
-        <tr><td>PCA → G0/0/1 : IPv4, IPv6 GUA</td><td class="num">2</td><td><code class="ans">ping 172.16.3.1</code> · <code class="ans">ping 2001:fe:ab:3::1</code></td></tr>
-        <tr><td>PCB → G0/0/0 : IPv4, IPv6 GUA</td><td class="num">2</td><td><code class="ans">ping -c 4 172.16.2.1</code> · <code class="ans">ping -c 4 2001:fe:ab:2::1</code></td></tr>
-        <tr><td>Other command : network delay and breaks in the path</td><td class="num">2</td><td><code class="ans">traceroute</code> (Linux) / <code class="ans">tracert</code> (Windows) — ex. <code>tracert 172.16.3.10</code></td></tr>
-        <tr><td>SSH between a Linux workstation and the router — leave it open</td><td class="num">4</td><td><code class="ans">ssh admin@172.16.3.1</code> → yes → admin1pass → <code>R1-TonNom&gt;</code><br><span class="small muted">Erreur d'algorithme : <code>ssh -o KexAlgorithms=+diffie-hellman-group14-sha1 -o HostKeyAlgorithms=+ssh-rsa admin@172.16.3.1</code></span></td></tr>
+        <tr><td>PCA → G0/0/0 : IPv4, IPv6 LLA <span class="src ok">TP3-1</span></td><td class="num">2</td><td><code class="ans">ping 172.16.2.1</code> · <code class="ans">ping fe80::1%12</code> <span class="small muted">(%12 = index de la carte vu dans ipconfig)</span></td></tr>
+        <tr><td>PCB → G0/0/1 : IPv4, IPv6 LLA <span class="src ok">TP3-1</span></td><td class="num">2</td><td><code class="ans">ping -c 4 172.16.3.1</code> · <code class="ans">ping -6 -c 4 -I enp0s3 fe80::1</code></td></tr>
+        <tr><td>PCA → G0/0/1 : IPv4, IPv6 GUA <span class="src ok">TP3-1</span></td><td class="num">2</td><td><code class="ans">ping 172.16.3.1</code> · <code class="ans">ping 2001:fe:ab:3::1</code></td></tr>
+        <tr><td>PCB → G0/0/0 : IPv4, IPv6 GUA <span class="src ok">TP3-1</span></td><td class="num">2</td><td><code class="ans">ping -c 4 172.16.2.1</code> · <code class="ans">ping -c 4 2001:fe:ab:2::1</code></td></tr>
+        <tr><td>Other command : network delay and breaks in the path <span class="src ok">TP3-1</span></td><td class="num">2</td><td><code class="ans">traceroute</code> (Linux) / <code class="ans">tracert</code> (Windows) — ex. <code>tracert 172.16.3.10</code></td></tr>
+        <tr><td>SSH between a Linux workstation and the router — leave it open <span class="src ok">TP3-2</span></td><td class="num">4</td><td><code class="ans">ssh admin@172.16.3.1</code> → yes → admin1pass → <code>R1-TonNom&gt;</code><br><span class="small muted">Erreur d'algorithme : <code>ssh -o KexAlgorithms=+diffie-hellman-group14-sha1 -o HostKeyAlgorithms=+ssh-rsa admin@172.16.3.1</code></span></td></tr>
       </tbody></table></div>
     <p class="tip">💡 Ping PC-B → PC-A qui échoue alors que A → B marche ⇒ <b>pare-feu Windows</b>. Ping qui échoue partout ⇒ <code>show ip interface brief</code> sur R1 (administratively down ? → <code>no shutdown</code>).</p>
   </section>
@@ -312,19 +317,19 @@ ip -6 addr show dev enp0s3                    # GUA = inet6 2001:fe:ab:3:… sco
     <div class="tbl-wrap"><table class="tbl ans-tbl">
       <thead><tr><th>Description</th><th>Commande (sur R1, en #)</th></tr></thead>
       <tbody>
-        <tr><td>Summary of important information about the IPv4 interfaces</td><td><code class="ans">show ip interface brief</code></td></tr>
-        <tr><td>IPv4 routing table</td><td><code class="ans">show ip route</code></td></tr>
-        <tr><td>Layer 2 to Layer 3 mapping of addresses</td><td><code class="ans">show arp</code> <span class="small muted">(= show ip arp)</span></td></tr>
-        <tr><td>Detailed IPv4 information about interface G0/0/0</td><td><code class="ans">show ip interface g0/0/0</code> <span class="small muted">(pas « show interfaces »)</span></td></tr>
-        <tr><td>IPv6 routing table</td><td><code class="ans">show ipv6 route</code></td></tr>
-        <tr><td>Summary of IPv6 interface addresses and status</td><td><code class="ans">show ipv6 interface brief</code></td></tr>
-        <tr><td>On the switch : MAC address of the devices connected to the ports</td><td><code class="ans">show mac address-table</code> <span class="small muted">(sur S1)</span></td></tr>
-        <tr><td>Save the current configuration for the next start</td><td><code class="ans">copy running-config startup-config</code></td></tr>
+        <tr><td>Summary of important information about the IPv4 interfaces <span class="src ok">TP2-2</span></td><td><code class="ans">show ip interface brief</code></td></tr>
+        <tr><td>IPv4 routing table <span class="src ok">TP2-2</span></td><td><code class="ans">show ip route</code></td></tr>
+        <tr><td>Layer 2 to Layer 3 mapping of addresses <span class="src ok">TP2-1</span></td><td><code class="ans">show arp</code> <span class="small muted">(= show ip arp)</span></td></tr>
+        <tr><td>Detailed IPv4 information about interface G0/0/0 <span class="src var">Variante TP2-2</span><br><span class="small muted">En TP : <code>show interface g0/1</code> et <code>show ipv6 interface</code></span></td><td><code class="ans">show ip interface g0/0/0</code> <span class="small muted">(pas « show interfaces »)</span></td></tr>
+        <tr><td>IPv6 routing table <span class="src lab">Lab Cisco routes statiques</span></td><td><code class="ans">show ipv6 route</code></td></tr>
+        <tr><td>Summary of IPv6 interface addresses and status <span class="src ok">TP2-2</span></td><td><code class="ans">show ipv6 interface brief</code></td></tr>
+        <tr><td>On the switch : MAC address of the devices connected to the ports <span class="src ok">TP2-1</span></td><td><code class="ans">show mac address-table</code> <span class="small muted">(sur S1)</span></td></tr>
+        <tr><td>Save the current configuration for the next start <span class="src ok">TP1</span></td><td><code class="ans">copy running-config startup-config</code></td></tr>
       </tbody></table></div>
   </section>
 
   <section class="card">
-    <h2>6 · Cleanup (−10 si pas fait) — SEULEMENT après la correction</h2>
+    <h2>6 · Cleanup (−10 si pas fait) — SEULEMENT après la correction <span class="src ok">Fin de chaque TP</span></h2>
     <pre class="code ans">R1#  erase startup-config      (+ reload ou éteindre)
 S1#  erase startup-config
 S1#  delete vlan.dat

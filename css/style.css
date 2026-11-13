@@ -298,3 +298,11 @@ details.corr { margin: 16px 0; background: var(--surface); border: 1px solid var
 }
 .paper table.tbl { display: block; overflow-x: auto; }
 .steps a > b { display: block; }
+/* badges « d'où vient la tâche » (page Annale) */
+.src { display: inline-block; font: 700 .7rem/1.4 var(--sans); border-radius: 999px; padding: 1px 8px; margin: 2px 2px 0 0; vertical-align: middle; white-space: nowrap; border: 1px solid transparent; }
+.src.ok { background: var(--ok-soft); color: var(--ok); border-color: color-mix(in srgb, var(--ok) 35%, transparent); }
+.src.var { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+.src.lab { background: var(--warn-soft); color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
+.src.new { background: var(--ko-soft); color: var(--ko); border-color: color-mix(in srgb, var(--ko) 40%, transparent); }
+h2 .src, h4 .src { font-size: .68rem; }
+.srcbox p { margin: .3em 0; } .legend { line-height: 2; }
