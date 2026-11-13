@@ -306,3 +306,4 @@ details.corr { margin: 16px 0; background: var(--surface); border: 1px solid var
 .src.new { background: var(--ko-soft); color: var(--ko); border-color: color-mix(in srgb, var(--ko) 40%, transparent); }
 h2 .src, h4 .src { font-size: .68rem; }
 .srcbox p { margin: .3em 0; } .legend { line-height: 2; }
+.blk.split { break-inside: auto; } .blk.split pre b { display: inline-block; margin-top: .6mm; color: #0f766e; }

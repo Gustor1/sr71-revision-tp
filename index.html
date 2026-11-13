@@ -358,7 +358,7 @@ S1#  delete vlan.dat
 <section class="page" id="p-a4" data-page="a4">
   <div class="noprint">
     <h1>Fiche A4 recto-verso</h1>
-    <p class="lead">Ta feuille autorisée. <b>Recto</b> = la séquence complète de l'annale dans l'ordre. <b>Verso</b> = « quand l'énoncé dit… je tape… », dépannage, Linux/Windows, bonus VLAN/DHCP/routes. Imprime en <b>A4, recto-verso, échelle 100 %, sans marges ajoutées</b>.</p>
+    <p class="lead">Ta feuille autorisée. <b>Recto</b> = la séquence complète de l'annale dans l'ordre, stratégie, débogage d'un ping, IPv6/masques. <b>Verso</b> = « l'énoncé dit… → je tape » pour la <b>config</b> (base, sécurité, interfaces, switch, VLAN/trunk, routage, DHCP) et pour les <b>tests</b> (PC Windows/Linux + commandes show), puis le dépannage. Imprime en <b>A4, recto-verso, échelle 100 %, sans marges ajoutées</b>.</p>
     <div class="bar"><button class="btn" id="printA4" type="button">🖨 Imprimer la fiche</button> <span class="small muted" id="a4fit"></span></div>
   </div>
   <div class="sheets">
@@ -492,12 +492,28 @@ Vérifier : show ip int brief / show run</pre></div>
 5. IPv6 : unicast-routing ? GUA présente ?
 6. LLA : %index (Win) · -I enp0s3 (Linux)
 7. S1 injoignable d'ailleurs → default-gateway</pre></div>
+      <div class="blk"><h5>IPv6 / masques</h5>
+<pre>fe80::/10 link-local (jamais routée)
+2000::/3 GUA · ff02::1 tous nœuds
+ff02::2 tous routeurs · SLAAC = préfixe RA
++ ID (EUI-64 : MAC + FFFE, 7ᵉ bit inversé)
+/24 255.255.255.0   /25 .128  /26 .192
+/27 .224  /28 .240  /29 .248  /30 .252</pre></div>
+      <div class="blk"><h5>Réponses courtes (questions TP)</h5>
+<pre>IP sur switch → administration à distance
+bia = MAC gravée · OUI = 3 1ers octets
+MAC broadcast = FFFF.FFFF.FFFF
+table MAC = MAC SOURCE + port d'arrivée
+route : C connecté · L local /32 · S statique
+secret = hash · password = clair (7 si spe)
+fe80::1 sur 2 interfaces OK (local au lien)
+SSH > Telnet : chiffré · Ctrl+Maj+6 x = sortir</pre></div>
     </div>
   </article>
 
   <!-- VERSO -->
   <article class="sheet" id="sheet2" aria-label="Fiche verso">
-    <header class="sh-h"><b>SR71 · VERSO</b><span>Énoncé → commande · dépannage · bonus TP</span></header>
+    <header class="sh-h"><b>SR71 · VERSO</b><span>L'énoncé dit… → je tape (config + tests) · dépannage</span></header>
     <div class="sh-cols">
       <div class="blk"><h5>Modes IOS</h5>
 <pre>R&gt;  enable →  R#  conf t →  R(config)#
@@ -507,37 +523,121 @@ exit = 1 niveau · end / Ctrl+Z = vers #
 do show … = show depuis (config)#
 ? = aide · Tab = compléter · ↑ historique
 Ctrl+Maj+6 = annuler (Translating…/ping)</pre></div>
-      <div class="blk"><h5>Quand l'énoncé dit… → je tape</h5>
-<pre>Disable DNS    no ip domain-lookup
-Router name    hostname R1-NOM
-Domain name    ip domain-name ccna-lab.com
-Min length pw  security passwords min-length 5
-Encrypted priv enable secret class
-Console pw     line con 0 · password X · login
-Local user     username U secret P
-RSA key        crypto key generate rsa
-               modulus 1024 (ou répondre 1024)
-vty local db   line vty 0 4 · login local
-vty SSH only   transport input ssh
-Encrypt clear  service password-encryption
-MOTD banner    banner motd #texte#
-IPv6 routing   ipv6 unicast-routing
-Description    description X
-L3 IPv4        ip address IP MASQUE
-IPv6 LLA       ipv6 address fe80::1 link-local
-L3 IPv6        ipv6 address 2001:…::1/64
-Activate       no shutdown
-Unused ports   interface range … · shutdown
-SVI VLAN1      interface vlan 1
-Switch GW      ip default-gateway IP
-SDM IPv6       sdm prefer dual-ipv4-and-ipv6
-               default (+ end + reload)
-Erase startup  erase startup-config
-Erase VLANs    delete vlan.dat
-Save           copy run start (= write)
-IOS version    show version
-Telnet (TP1)   line vty 0 15 · password · login
-SSH v2         ip ssh version 2</pre></div>
+      <div class="blk split"><h5>CONFIG · l'énoncé dit… → je tape</h5>
+<pre><b>BASE (config)#</b>
+Disable DNS lookup  no ip domain-lookup
+Router/Switch name  hostname R1-NOM
+Domain name         ip domain-name ccna-lab.com
+MOTD banner         banner motd #Acces interdit#
+Console sync logs   (line con 0) logging synchronous
+Set the clock (#)   clock set 15:00:00 31 Jan 2035
+<b>SÉCURITÉ</b>
+Min length pw       security passwords min-length 5
+Encrypted priv pw   enable secret class
+Console password    line con 0 · password cisco · login
+Telnet (vty pw)     line vty 0 15 · password X · login
+Encrypt clear pw    service password-encryption
+Local admin user    username admin secret admin1pass
+RSA key 1024 bits   crypto key generate rsa modulus 1024
+SSH version 2       ip ssh version 2
+vty local database  line vty 0 4 · login local
+vty SSH only        transport input ssh
+vty Telnet + SSH    transport input telnet ssh
+<b>INTERFACES (config-if)#</b>
+Description         description Link to S1
+L3 IPv4 address     ip address 172.16.2.1 255.255.255.0
+IPv6 link-local     ipv6 address fe80::1 link-local
+L3 IPv6 (GUA)       ipv6 address 2001:db8:acad:1::1/64
+Activate            no shutdown
+Unused ports        interface range f0/1-4 , f0/7-24
+                    shutdown
+Loopback            interface loopback 1
+                    ip address 10.1.0.1 255.255.255.0
+<b>SWITCH</b>
+SDM IPv6            sdm prefer dual-ipv4-and-ipv6 default
+                    (ou lanbase-routing) · end · reload
+SVI VLAN 1          int vlan 1 · ip address … · no sh
+Switch gateway      ip default-gateway 172.16.2.1
+Mgmt → VLAN 99      int vlan 1 · no ip address
+                    int vlan 99 · ip address … · no sh
+<b>VLAN / TRUNK</b>
+Create VLAN         vlan 10 · name Operations
+Port in VLAN        switchport mode access
+                    switchport access vlan 10
+Remove port / VLAN  no switchport access vlan
+                    no vlan 30
+Static trunk        switchport mode trunk
+Trunk via DTP       switchport mode dynamic desirable
+Native VLAN         switchport trunk native vlan 1000
+Allowed VLANs       switchport trunk allowed vlan 10,20
+Router-on-a-stick   int g0/0/1.10 · encap. dot1Q 10
+                    ip address 192.168.10.1 255.255.255.0
+Native subif        encapsulation dot1Q 1000 native
+                    (+ int g0/0/1 · no shutdown, sans IP)
+<b>ROUTAGE</b>
+IPv6 routing        ipv6 unicast-routing
+Static route        ip route 10.2.0.0 255.255.255.0 NH
+Default route       ip route 0.0.0.0 0.0.0.0 NH
+Floating route      … même route + distance (ex. 80)
+IPv6 static route   ipv6 route 2001:db8:2::/64 NH
+IPv6 default route  ipv6 route ::/0 NH
+<b>DHCP</b>
+Exclude addresses   ip dhcp excluded-address 1ʳᵉ dernière
+DHCP pool           ip dhcp pool LAN · network N MASQUE
+                    default-router GW · domain-name D
+                    lease 2 12 30  (j h min)
+DHCP relay          (int côté PC) ip helper-address SRV
+DHCPv6 stateless    ipv6 dhcp pool P · dns-server X
+                    (int) ipv6 nd other-config-flag
+                    (int) ipv6 dhcp server P
+DHCPv6 stateful     pool + address prefix 2001:…/80
+                    (int) ipv6 nd managed-config-flag
+DHCPv6 relay        (int) ipv6 dhcp relay destination
+                    ADR g0/0/0
+<b>INIT / SAUVER (#)</b>
+Erase startup       erase startup-config
+Erase VLANs         delete vlan.dat
+Reload              reload (Save? no · dialog? no)
+Save                copy running-config startup-config</pre></div>
+      <div class="blk split"><h5>TESTS · l'énoncé dit… → je tape</h5>
+<pre><b>PC (Win = PC-A · Lx = PC-B)</b>
+Set IPv4 + GW (Win) ncpa.cpl · ou netsh … static IP M GW
+Set IPv4 (Linux)    sudo ip addr add IP/24 dev enp0s3
+Set GW (Linux)      sudo ip route add default via GW
+Interface name      Win netsh int show int · Lx ip a
+Write down IPv6 GUA Win ipconfig · Lx ip -6 a (global)
+MAC address         Win ipconfig /all · Lx ip a
+Pings not answered  netsh advfirewall set allprofiles
+                    state off
+Ping IPv4           Win ping IP · Lx ping -c4 IP
+Ping IPv6 GUA       ping 2001:…   (Lx : ping -6)
+Ping link-local     Win ping fe80::1%12
+                    Lx ping -6 -I enp0s3 fe80::1
+Delay / breaks      tracert (Win) · traceroute (Lx, IOS)
+SSH from Linux      ssh admin@IP (+ -o KexAlgorithms=+…)
+SSH from switch     ssh -l admin IP · Ctrl+Maj+6 puis x
+Telnet              telnet IP
+ARP cache           Win arp -a · Lx ip neigh
+DHCP client         Win ipconfig /renew (/renew6)
+                    Lx sudo dhclient -v enp0s3
+<b>IOS (#) · depuis (config) : do …</b>
+Ping / trace (IOS)  ping IP · traceroute IP
+IPv4 int summary    show ip interface brief
+IPv6 int summary    show ipv6 interface brief
+Detailed IPv4 int   show ip interface g0/0/0
+Detailed IPv6 int   show ipv6 interface g0/0/0
+L1/L2 int (MAC,bia) show interfaces g0/0/0
+IPv4 routing table  show ip route
+IPv6 routing table  show ipv6 route
+L2 → L3 mapping     show arp
+MAC table (switch)  show mac address-table
+Clear MAC table     clear mac address-table dynamic
+Running / saved cfg show running-config / startup-config
+VLANs / trunks      show vlan brief · show int trunk
+SSH / SDM / IOS     show ip ssh · show sdm prefer
+                    show version · show clock
+DHCP                show ip dhcp binding · … pool
+                    show ip dhcp server statistics</pre></div>
       <div class="blk"><h5>Dépannage express</h5>
 <pre>Translating "…" → no ip domain-lookup
    (Ctrl+Maj+6 pour couper)
@@ -557,66 +657,6 @@ no matching key exchange → -o KexAlgorithms=+…
 Windows ping fe80 → %index
 .!!!! → normal (ARP au 1er paquet)
 PuTTY noir → port/9600/sudo/Entrée/CONSOLE</pre></div>
-      <div class="blk"><h5>Linux (PC-B)</h5>
-<pre>ip a · ip -6 a · ip route · ip neigh
-sudo ip link set enp0s3 up
-sudo ip addr add|del IP/24 dev enp0s3
-sudo ip addr flush dev enp0s3
-sudo ip route add default via GW
-sudo ip -6 addr add X/64 dev enp0s3
-ping -c4 X · ping -6 -I enp0s3 fe80::1
-traceroute X · ssh admin@X · telnet X
-sudo dhclient -v enp0s3 (DHCP)</pre></div>
-      <div class="blk"><h5>Windows (PC-A)</h5>
-<pre>ipconfig · ipconfig /all (MAC) · arp -a
-route print · ncpa.cpl
-netsh interface show interface (nom)
-ping X · ping -t X · ping fe80::1%12
-tracert X · ipconfig /release · /renew
-netsh advfirewall set allprofiles state off</pre></div>
-      <div class="blk"><h5>Vérifier (switch/routeur)</h5>
-<pre>show running-config · show startup-config
-show ip interface brief · show ipv6 int brief
-show interfaces vlan 1 (MAC, bia)
-show mac address-table · clear mac addr dyn
-show ip ssh · show version · show sdm prefer
-show vlan brief · show interfaces trunk</pre></div>
-      <div class="blk"><h5>Bonus VLAN / trunk / inter-VLAN</h5>
-<pre>vlan 10 · name Operations
-int f0/6 · switchport mode access
-         · switchport access vlan 10
-int f0/1 · switchport mode trunk
- switchport trunk native vlan 1000
- switchport trunk allowed vlan 10,20,1000
-R: int g0/0/1.10 · encapsulation dot1Q 10
-   ip address 192.168.10.1 255.255.255.0
-   int g0/0/1.1000 · encap dot1Q 1000 native
-   int g0/0/1 · no shutdown</pre></div>
-      <div class="blk"><h5>Bonus routes / DHCP</h5>
-<pre>ip route 0.0.0.0 0.0.0.0 NEXT-HOP
-ip route RESEAU MASQUE NEXT-HOP [AD]
-ipv6 route ::/0 NEXT-HOP
-ip dhcp excluded-address A B
-ip dhcp pool P · network N M
- default-router GW · domain-name D
-int … · ip helper-address SERVEUR
-show ip dhcp binding</pre></div>
-      <div class="blk"><h5>IPv6 / masques</h5>
-<pre>fe80::/10 link-local (jamais routée)
-2000::/3 GUA · ff02::1 tous nœuds
-ff02::2 tous routeurs · SLAAC = préfixe RA
-+ ID (EUI-64 : MAC + FFFE, 7ᵉ bit inversé)
-/24 255.255.255.0   /25 .128  /26 .192
-/27 .224  /28 .240  /29 .248  /30 .252</pre></div>
-      <div class="blk"><h5>Réponses courtes (questions TP)</h5>
-<pre>IP sur switch → administration à distance
-bia = MAC gravée · OUI = 3 1ers octets
-MAC broadcast = FFFF.FFFF.FFFF
-table MAC = MAC SOURCE + port d'arrivée
-route : C connecté · L local /32 · S statique
-secret = hash · password = clair (7 si spe)
-fe80::1 sur 2 interfaces OK (local au lien)
-SSH > Telnet : chiffré · Ctrl+Maj+6 x = sortir</pre></div>
     </div>
   </article>
   </div>
